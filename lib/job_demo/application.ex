@@ -9,18 +9,18 @@ defmodule JobDemo.Application do
   def start(_type, _args) do
     children = [
       # {JobDemo.Scheduler, []},
-      # {Phoenix.PubSub, name: JobDemo.PubSub},
+      {Phoenix.PubSub, name: JobDemo.PubSub},
       {JobDemo.JobManager, %{}},
       {DynamicSupervisor, dynamic_supervisor_config()},
-      # {JobDemo.Producer, []},
-      # {JobDemo.Consumer, []},
+      {JobDemo.Producer, []},
+      {JobDemo.Consumer, []}
       # %{
       #   id: "Consumer_1",
-      #   start: {JobExample.Consumer, :start_link, [[]]}
+      #   start: {JobDemo.Consumer, :start_link, [[]]}
       # },
       # %{
       #   id: "Consumer_2",
-      #   start: {JobExample.Consumer, :start_link, [[]]}
+      #   start: {JobDemo.Consumer, :start_link, [[]]}
       # }
     ]
 

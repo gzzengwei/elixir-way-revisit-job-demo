@@ -29,11 +29,25 @@ defmodule JobDemo.Job do
     {:noreply, new_state}
   end
 
+  @chunk_size 2
   def run(job) do
-    enable_error(System.get_env("ENABLE_ERROR") == "true", job.error?)
-    job.run
-    Logger.info("#{inspect(job)} Done!")
+    enable_error(System.get_env("ENABLE_ERROR") == "true", job.error?())
+
+    job.range()
+    |> Stream.map(fn _ -> job.data() end)
+    |> Stream.chunk_every(@chunk_size)
+    |> Enum.each(&broadcast_rows(&1, job))
+
+    Logger.info("#{inspect(job)} broadcast!")
     :ok
+  end
+
+  defp broadcast_rows(chuck_data, job) do
+    Phoenix.PubSub.broadcast(
+      JobDemo.PubSub,
+      "jobs",
+      {inspect(job), chuck_data}
+    )
   end
 
   defp enable_error(true, true), do: raise("BOOM!!!")
@@ -41,19 +55,19 @@ defmodule JobDemo.Job do
 end
 
 defmodule JobDemo.JobA do
-  @job_duration 1000
-  def run, do: :timer.sleep(@job_duration)
+  def range, do: 1..10
+  def data, do: ["1", "2", "3"]
   def error?, do: false
 end
 
 defmodule JobDemo.JobB do
-  @job_duration 2000
-  def run, do: :timer.sleep(@job_duration)
+  def range, do: 1..20
+  def data, do: ["4", "5", "6"]
   def error?, do: true
 end
 
 defmodule JobDemo.JobC do
-  @job_duration 3000
-  def run, do: :timer.sleep(@job_duration)
+  def range, do: 1..30
+  def data, do: ["7", "8", "9"]
   def error?, do: false
 end
