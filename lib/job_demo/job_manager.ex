@@ -15,6 +15,6 @@ defmodule JobDemo.JobManager do
 
   def do_job(job) do
     Logger.info("Starting #{inspect(job)}")
-    job |> Job.run()
+    Task.start(fn -> Job.run(job) end)
   end
 end
