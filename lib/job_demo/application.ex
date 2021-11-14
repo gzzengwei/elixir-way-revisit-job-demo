@@ -10,7 +10,7 @@ defmodule JobDemo.Application do
     children = [
       # {JobDemo.Scheduler, []},
       # {Phoenix.PubSub, name: JobDemo.PubSub},
-      # {JobDemo.JobManager, [%{}]},
+      {JobDemo.JobManager, %{}}
       # {DynamicSupervisor, dynamic_supervisor_config()},
       # {JobDemo.Producer, []},
       # {JobDemo.Consumer, []},

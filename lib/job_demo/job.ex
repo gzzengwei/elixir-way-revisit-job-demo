@@ -5,6 +5,11 @@ defmodule JobDemo.Job do
     enable_error(System.get_env("ENABLE_ERROR") == "true", job.error?)
     job.run
     Logger.info("#{inspect(job)} Done!")
+    :ok
+  # rescue
+  #   err in RuntimeError ->
+  #     Logger.error(inspect(err))
+  #     :err
   end
 
   defp enable_error(true, true), do: raise("BOOM!!!")
