@@ -10,8 +10,8 @@ defmodule JobDemo.Application do
     children = [
       # {JobDemo.Scheduler, []},
       # {Phoenix.PubSub, name: JobDemo.PubSub},
-      {JobDemo.JobManager, %{}}
-      # {DynamicSupervisor, dynamic_supervisor_config()},
+      {JobDemo.JobManager, %{}},
+      {DynamicSupervisor, dynamic_supervisor_config()},
       # {JobDemo.Producer, []},
       # {JobDemo.Consumer, []},
       # %{
@@ -28,5 +28,12 @@ defmodule JobDemo.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: JobDemo.Supervisor]
     Supervisor.start_link(children, opts)
+  end
+
+  defp dynamic_supervisor_config do
+    [
+      strategy: :one_for_one,
+      name: JobDemo.JobRunner
+    ]
   end
 end

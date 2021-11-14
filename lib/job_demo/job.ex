@@ -1,15 +1,39 @@
 defmodule JobDemo.Job do
+  use GenServer
+
   require Logger
+
+  def start_link(job) do
+    GenServer.start_link(__MODULE__, job, name: job)
+  end
+
+  def init(job) do
+    {:ok, %{"job_type" => job, "last_done" => nil}, {:continue, :after_init}}
+  end
+
+  def handle_continue(:after_init, %{"job_type" => job} = state) do
+    Logger.info("#{inspect(job)} pid #{inspect(self())}")
+    {:noreply, state}
+  end
+
+  def handle_cast(:run, %{"job_type" => job} = state) do
+    new_state =
+      case run(job) do
+        :ok ->
+          %{state | "last_done" => DateTime.now!("Etc/UTC")}
+
+        _ ->
+          state
+      end
+
+    {:noreply, new_state}
+  end
 
   def run(job) do
     enable_error(System.get_env("ENABLE_ERROR") == "true", job.error?)
     job.run
     Logger.info("#{inspect(job)} Done!")
     :ok
-  # rescue
-  #   err in RuntimeError ->
-  #     Logger.error(inspect(err))
-  #     :err
   end
 
   defp enable_error(true, true), do: raise("BOOM!!!")

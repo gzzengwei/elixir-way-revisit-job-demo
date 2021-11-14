@@ -4,7 +4,7 @@ defmodule JobDemo.JobManager do
   require Logger
 
   alias JobDemo.{JobA, JobB, JobC}
-  alias JobDemo.Job
+  alias JobDemo.{Job, JobRunner, JobSuperviosr}
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args, name: __MODULE__)
@@ -20,13 +20,19 @@ defmodule JobDemo.JobManager do
 
   def handle_continue(:after_init, state) do
     Logger.info("JobManager PID #{inspect(self())} ...")
-    {:noreply, state}
+
+    new_state =
+      job_list()
+      |> Enum.map(&start_job_supervisor(&1))
+      |> Enum.reduce(state, fn {job, pid}, acc -> Map.put(acc, job, pid) end)
+
+    {:noreply, new_state}
   end
 
   def handle_cast(:do_jobs, state) do
     new_state =
-      do_tasks
-      |> Enum.reduce(state, fn result, acc -> process_job_result(result, acc) end)
+      job_list()
+      |> Enum.map(&do_job(&1))
 
     {:noreply, new_state}
   end
@@ -35,20 +41,20 @@ defmodule JobDemo.JobManager do
     [JobA, JobB, JobC]
   end
 
-  def do_job(job) do
-    Logger.info("Starting #{inspect(job)}")
-    {job, Job.run(job)}
+  defp do_job(job) do
+    Logger.info("Starting #{inspect(job)} ...")
+    GenServer.cast(job, :run)
   end
 
-  defp do_tasks do
-    job_list()
-    |> Enum.map(&Task.async(fn -> do_job(&1) end))
-    |> Task.await_many()
-  end
+  defp start_job_supervisor(job) do
+    Logger.info("Starting Supervisor for #{inspect(job)}")
 
-  def process_job_result({job, :ok}, state) do
-    Map.put(state, job, DateTime.now!("Etc/UTC"))
-  end
+    case DynamicSupervisor.start_child(JobRunner, {JobSuperviosr, job}) do
+      {:ok, supvervisor_pid} ->
+        {job, supvervisor_pid}
 
-  def process_job_result(_, state), do: state
+      _ ->
+        {job, nil}
+    end
+  end
 end
