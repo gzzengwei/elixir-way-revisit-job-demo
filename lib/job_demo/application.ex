@@ -9,7 +9,7 @@ defmodule JobDemo.Application do
   def start(_type, _args) do
     children = [
       # {JobDemo.Scheduler, []},
-      {Phoenix.PubSub, name: JobDemo.PubSub},
+      # {Phoenix.PubSub, name: JobDemo.PubSub},
       {JobDemo.JobManager, %{}},
       {DynamicSupervisor, dynamic_supervisor_config()},
       {JobDemo.Producer, []},

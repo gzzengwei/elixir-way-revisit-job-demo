@@ -43,11 +43,7 @@ defmodule JobDemo.Job do
   end
 
   defp broadcast_rows(chuck_data, job) do
-    Phoenix.PubSub.broadcast(
-      JobDemo.PubSub,
-      "jobs",
-      {inspect(job), chuck_data}
-    )
+    JobDemo.Producer.sync_notify({inspect(job), chuck_data})
   end
 
   defp enable_error(true, true), do: raise("BOOM!!!")
