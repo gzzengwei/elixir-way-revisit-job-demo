@@ -8,8 +8,20 @@ defmodule JobDemo.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: JobDemo.Worker.start_link(arg)
-      # {JobDemo.Worker, arg}
+      # {JobDemo.Scheduler, []},
+      # {Phoenix.PubSub, name: JobDemo.PubSub},
+      # {JobDemo.JobManager, [%{}]},
+      # {DynamicSupervisor, dynamic_supervisor_config()},
+      # {JobDemo.Producer, []},
+      # {JobDemo.Consumer, []},
+      # %{
+      #   id: "Consumer_1",
+      #   start: {JobExample.Consumer, :start_link, [[]]}
+      # },
+      # %{
+      #   id: "Consumer_2",
+      #   start: {JobExample.Consumer, :start_link, [[]]}
+      # }
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
