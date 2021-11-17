@@ -1,21 +1,43 @@
 # JobDemo
 
-**TODO: Add description**
+Code example for talk 'Elixir way by revisiting a project'
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `job_demo` to your list of dependencies in `mix.exs`:
+Install the dependencies:
 
-```elixir
-def deps do
-  [
-    {:job_demo, "~> 0.1.0"}
-  ]
-end
+```
+mix deps.get
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/job_demo](https://hexdocs.pm/job_demo).
+## Git tags for demo steps
 
+```
+git checkout v01 # simple loop with pure function
+git checkout v02 # Using Task, with `start`
+git checkout v03 # Switch to `GenServer`
+git checkout v04 # Upgrade to `DynamicSupervisor`
+git checkout v05 # `GenStage` with PubSub
+git checkout v06 # Using `BroadcastDispatcher`
+git checkout v07 # `BroadcastDispatcher` with erlang :queue module
+git checkout v08 # Update Producer `buffer_size` param
+
+```
+
+## Starting the app
+
+For happy path:
+
+```
+iex -S mix
+```
+
+For error path:
+
+```
+ENABLE_ERROR=true iex -S mix
+```
+
+## Links
+
+- [slide repo](https://github.com/gzzengwei/presentation#elixir-way-by-revisiting-a-project-on-elixir-australia)
